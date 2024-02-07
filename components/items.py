@@ -30,10 +30,14 @@ class CoalVein(py.sprite.Sprite):
             # right now they can just stay there even if empty 
             return None 
 
-class IronBar(py.sprite.Sprite):
+class IronBar(Item, py.sprite.Sprite):
     def __init__(self):
-        Item.__init__(self, 'Iron bar')
-
+        Item.__init__(self, 'Iron-bar')
+        self.image = py.transform.scale(py.image.load("assets/iron-bar.png").convert(), (32, 32))
+        self.image.set_colorkey((0,0,0))
+        self.rect = self.image.get_rect()
+    
+    
 class rawIronOre(Item, py.sprite.Sprite):
     def __init__(self):
         Item.__init__(self, 'rawIronOre')

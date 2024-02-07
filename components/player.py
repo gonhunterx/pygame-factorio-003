@@ -22,6 +22,9 @@ class Player(py.sprite.Sprite):
         self.message_log = MessageLog()
         self.last_mine_time = 0
         self.prev_pos = self.pos
+        self.is_mining = False
+        self.miner_timer = 0
+        self.mine_speed = 2
         
         # mining animation 
         self.pickaxe_sprite_sheet = py.image.load("assets/swing_pick.png").convert_alpha()
@@ -79,7 +82,8 @@ class Player(py.sprite.Sprite):
         self.pos += py.math.Vector2(self.velocity_x, self.velocity_y)
         self.rect.topleft = self.pos
         self.current_frame = (self.current_frame + 1) % len(self.frames)
-    
+        
+    # mining animation 
     def mine(self):
         self.current_mining_frame = (self.current_mining_frame + 1) % len(self.pickaxe_frames)
         self.current_image = self.pickaxe_frames[self.current_mining_frame]
@@ -95,8 +99,14 @@ class Player(py.sprite.Sprite):
 
         
     # INTERACTIONS WITH OBJECTS
-    def update(self, buildings, resources, furnace):
+    def update(self, buildings, resources, furnace, delta_time):
         self.user_input()
+        
+        if self.is_mining:
+            self.miner_timer += delta_time
+            while self.miner_timer >1 / self.mine_speed:
+                self.mine()
+                self.miner_timer -= 1 / self.mine_speed
     # COLLISION
     
 
@@ -119,6 +129,7 @@ class Player(py.sprite.Sprite):
             self.rect.topleft -= py.math.Vector2(self.velocity_x, self.velocity_y)
             self.velocity_x = 0
             self.velocity_y = 0
+        
         
         
         self.move()

@@ -3,7 +3,7 @@ from sys import exit
 from components.messageLog import MessageLog
 from settings import *
 from components.player import Player
-from components.items import IronOre
+from components.items import IronOre, IronBar
 from components.items import CoalVein
 from components.factory import Factory
 from components.furnace import Furnace 
@@ -36,18 +36,23 @@ iron_ore_group = py.sprite.Group()
 coal_vein_group = py.sprite.Group()
 buildings_group = py.sprite.Group()
 furnace_group = py.sprite.Group()
+processed_resources_group = py.sprite.Group()
 
 # Creating instances of resources and adding them to the groups
 iron_ore1 = IronOre()
 iron_ore2 = IronOre()
 coal_vein1 = CoalVein()
 coal_vein2 = CoalVein()
+iron_bar = IronBar()
 
 all_resources.add(iron_ore1, iron_ore2, coal_vein1, coal_vein2)
 iron_ore_group.add(iron_ore1, iron_ore2)
 coal_vein_group.add(coal_vein1, coal_vein2)
 buildings_group.add(factory)
 furnace_group.add(furnace)
+
+processed_resources_group.add(iron_bar)
+
 # Positioning resources
 iron_ore1.rect.topleft = (50, 50)
 iron_ore2.rect.topleft = (500, 200)
@@ -56,6 +61,7 @@ coal_vein2.rect.topleft = (550, 280)
 
 while True:
     
+    delta_time = clock.tick(FPS) / 1000.0
     keys = py.key.get_pressed()
     cursor_pos = py.mouse.get_pos()
     for event in py.event.get():
@@ -64,6 +70,7 @@ while True:
             exit()
             
     if keys[py.K_f]:
+        player.is_mining = True
         current_time = py.time.get_ticks()
         if current_time - player.last_mine_time >= MINE_DELAY:
             collided_sprites = py.sprite.spritecollide(player, all_resources, False)
@@ -82,6 +89,13 @@ while True:
                         player.inventory.add_item(rawIron)
             player.last_mine_time = current_time
     
+    # furnace logic 
+    if furnace.amount_of_coal and furnace.amount_of_iron_ore > 0:
+        for _ in range(furnace.amount_of_iron_ore):
+            furnace.process_resources()
+            print(f"iron bars:  {furnace.amount_of_iron_bar}")    
+            player.inventory.add_item(iron_bar)
+    
     if keys[py.K_e]:
         current_time = py.time.get_ticks()
         if current_time - player.last_mine_time >= MINE_DELAY:
@@ -98,8 +112,8 @@ while True:
                     player.inventory.remove_item('Coal', quantity=coal_count)
                     player.inventory.remove_item('rawIronOre', quantity=iron_ore_count)
                     
-                    print(furnace.amount_of_coal)
-                    print(furnace.amount_of_iron_ore)
+                    # print(furnace.amount_of_coal)
+                    # print(furnace.amount_of_iron_ore)
                     
             player.last_mine_time = current_time
     # if player.rect.colliderect(factory.rect):
@@ -133,7 +147,7 @@ while True:
 
     
     player.inventory.draw(window)
-    player.update(buildings_group, all_resources, furnace_group)
+    player.update(buildings_group, all_resources, furnace_group, delta_time)
     
     py.display.update()
     clock.tick(FPS)
