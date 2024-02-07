@@ -11,7 +11,7 @@ class Player(py.sprite.Sprite):
         self.cash = 0
         self.inventory = Inventory(capacity=10)
         self.sprite_sheet = py.image.load("assets/walking_sheet.png").convert_alpha()
-        self.frames = self.slice_spritesheet()
+        self.frames = self.slice_spritesheet(self.sprite_sheet, 16, 16)  # Pass the required arguments
         self.current_frame = 0
         self.image = self.frames[self.current_frame]
         self.flipped_frames = [py.transform.flip(frame, True, False) for frame in self.frames]
@@ -23,15 +23,20 @@ class Player(py.sprite.Sprite):
         self.last_mine_time = 0
         self.prev_pos = self.pos
         
-    def slice_spritesheet(self):
+        # mining animation 
+        self.pickaxe_sprite_sheet = py.image.load("assets/swing_pick.png").convert_alpha()
+        self.pickaxe_frames = self.slice_spritesheet(self.pickaxe_sprite_sheet, 16, 16)
+        self.current_mining_frame = 0
+        
+  
+
+    def slice_spritesheet(self, sprite_sheet, sprite_width, sprite_height):
         frames = []
-        sprite_width = 16
-        sprite_height = 16
-        for i in range(self.sprite_sheet.get_width() // sprite_width):
-            frame = self.sprite_sheet.subsurface(py.Rect(i * sprite_width, 0, sprite_width, sprite_height))
+        for i in range(sprite_sheet.get_width() // sprite_width):
+            frame = sprite_sheet.subsurface(py.Rect(i * sprite_width, 0, sprite_width, sprite_height))
             frames.append(py.transform.scale(frame, (32, 32)))
         return frames
-
+    
     def check_resource_collision(player, resource_group):
         for resource in resource_group:
             if player.rect.colliderect(resource.rect):
@@ -75,6 +80,10 @@ class Player(py.sprite.Sprite):
         self.rect.topleft = self.pos
         self.current_frame = (self.current_frame + 1) % len(self.frames)
     
+    def mine(self):
+        self.current_mining_frame = (self.current_mining_frame + 1) % len(self.pickaxe_frames)
+        self.current_image = self.pickaxe_frames[self.current_mining_frame]
+    
     def draw_inventory(surface, inventory):
         start_x, start_y = 10, 10  # Inventory display start position
         item_height = 20  # Height of each inventory item display
@@ -86,9 +95,16 @@ class Player(py.sprite.Sprite):
 
         
     # INTERACTIONS WITH OBJECTS
-    def update(self, buildings, resources):
+    def update(self, buildings, resources, furnace):
         self.user_input()
     # COLLISION
+    
+
+        collided_with_resource = py.sprite.spritecollide(self, resources, False)
+        if collided_with_resource:
+            self.rect.topleft -= py.math.Vector2(self.velocity_x, self.velocity_y)
+
+        
         self.rect.topleft += py.math.Vector2(self.velocity_x, self.velocity_y)
 
         collided_with_building = py.sprite.spritecollide(self, buildings, False)
@@ -97,7 +113,13 @@ class Player(py.sprite.Sprite):
             self.velocity_x = 0
             self.velocity_y = 0
             print("collided")
+
+        collided_with_furnace = py.sprite.spritecollide(self, furnace, False)
+        if collided_with_furnace:
+            self.rect.topleft -= py.math.Vector2(self.velocity_x, self.velocity_y)
+            self.velocity_x = 0
+            self.velocity_y = 0
+        
         
         self.move()
-
-        collided_with_resource = py.sprite.spritecollide(self, resources, False)
+        

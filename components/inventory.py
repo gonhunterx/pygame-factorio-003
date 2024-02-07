@@ -29,3 +29,15 @@ class Inventory:
             text = self.font.render(f": {item.quantity}", True, (255, 255, 255))
             screen.blit(text, (x + item.image.get_width(), y))  # Blit the quantity next to the image
             y += max(self.font.get_height(), item.image.get_height()) 
+            
+    def count_items(self):
+        iron_ore_counter = 0
+        coal_counter = 0
+        for item_name, item in self.items.items():
+            print(item_name, item.quantity)
+            if item_name == 'rawIronOre':
+                iron_ore_counter = item.quantity
+            if item_name == 'Coal':
+                coal_counter = item.quantity
+        return iron_ore_counter, coal_counter  
+            

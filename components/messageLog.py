@@ -9,7 +9,7 @@ class MessageLog:
     def add_message(self, message):
         self.messages.append(message)
         if len(self.messages) > self.max_messages:
-            self.messages.pop() # remove oldest message 
+            self.messages.pop(0) # remove oldest message 
     
     def draw(self, window):
         for i, message in enumerate(reversed(self.messages)):

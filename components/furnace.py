@@ -7,3 +7,7 @@ class Furnace(py.sprite.Sprite):
         self.image.set_colorkey((0,0,0))
         self.pos = py.math.Vector2((600, 500))
         self.rect = self.image.get_rect(topleft=self.pos)
+        self.amount_of_coal = 0
+        self.amount_of_iron_ore = 0 
+        self.amount_of_iron_bar = 0
+        
