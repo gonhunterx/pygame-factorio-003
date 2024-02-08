@@ -10,22 +10,25 @@ class Player(py.sprite.Sprite):
         super().__init__()
         self.cash = 0
         self.inventory = Inventory(capacity=10)
-        self.sprite_sheet = py.image.load("assets/walking_sheet.png").convert_alpha()
-        self.frames = self.slice_spritesheet(self.sprite_sheet, 16, 16)  # Pass the required arguments
-        self.current_frame = 0
-        self.image = self.frames[self.current_frame]
-        self.flipped_frames = [py.transform.flip(frame, True, False) for frame in self.frames]
-        self.current_image = self.image 
         self.pos = py.math.Vector2(PLAYER_START_X, PLAYER_START_Y)
         self.speed = PLAYER_SPEED 
-        self.rect = self.image.get_rect(topleft=self.pos)
         self.message_log = MessageLog()
         self.last_mine_time = 0
         self.prev_pos = self.pos
         self.is_mining = False
         self.miner_timer = 0
         self.mine_speed = 2
+        self.has_moved = False
         
+        
+        self.sprite_sheet = py.image.load("assets/walking_sheet.png").convert_alpha()
+        self.frames = self.slice_spritesheet(self.sprite_sheet, 16, 16)  
+        self.current_frame = 0
+        self.image = self.frames[self.current_frame]
+        self.current_image = self.image 
+        self.rect = self.image.get_rect(topleft=self.pos)
+        
+        self.flipped_frames = [py.transform.flip(frame, True, False) for frame in self.frames]
         # mining animation 
         self.pickaxe_sprite_sheet = py.image.load("assets/swing_pick.png").convert_alpha()
         self.pickaxe_frames = self.slice_spritesheet(self.pickaxe_sprite_sheet, 16, 16)
@@ -77,6 +80,13 @@ class Player(py.sprite.Sprite):
             self.velocity_x /= math.sqrt(2)
             self.velocity_y /= math.sqrt(2)
         
+        # Update is_mining flag
+        if self.velocity_x != 0 or self.velocity_y != 0:
+            self.is_mining = False
+            self.has_moved = True  # Player has started moving
+        elif self.has_moved:  # Only set is_mining to True if the player has moved at least once
+            self.is_mining = True
+        
     def move(self):
         self.prev_pos = self.pos
         self.pos += py.math.Vector2(self.velocity_x, self.velocity_y)
@@ -85,9 +95,15 @@ class Player(py.sprite.Sprite):
         
     # mining animation 
     def mine(self):
-        self.current_mining_frame = (self.current_mining_frame + 1) % len(self.pickaxe_frames)
-        self.current_image = self.pickaxe_frames[self.current_mining_frame]
-    
+        if self.is_mining:
+            # Player is not moving, so update the mining frame and image
+            self.current_mining_frame = (self.current_mining_frame + 1) % len(self.pickaxe_frames)
+            self.current_image = self.pickaxe_frames[self.current_mining_frame]
+        else:
+            # Player is moving, so reset the mining frame and update the image to the walking frame
+            self.current_mining_frame = 0
+            self.current_image = self.frames[self.current_frame]
+
     def draw_inventory(surface, inventory):
         start_x, start_y = 10, 10  # Inventory display start position
         item_height = 20  # Height of each inventory item display

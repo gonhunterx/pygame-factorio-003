@@ -70,7 +70,7 @@ while True:
             exit()
             
     if keys[py.K_f]:
-        player.is_mining = True
+        # player.is_mining = True
         current_time = py.time.get_ticks()
         if current_time - player.last_mine_time >= MINE_DELAY:
             collided_sprites = py.sprite.spritecollide(player, all_resources, False)
