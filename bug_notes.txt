@@ -1,0 +1,16 @@
+UNDERWAY: 
+
+Adding coal and iron to the furnace gives you a seemingly random amount of iron bars 
+
+
+
+
+
+
+SOLVED:     
+Right now there is only a delay in the mining animation when the 
+player is actually mining an ore. 
+    - tested by an event that occured seemingly by accident. 
+        - mining animation while not colliding with an ore vein...
+
+If you hold down 'f' while over an ore and the walk away you keep mining. 

@@ -12,11 +12,16 @@ class Furnace(py.sprite.Sprite):
         self.amount_of_iron_ore = 0 
         self.amount_of_iron_bar = 0
         self.last_process_time = 0
+        self.has_fuel = False 
         
     def process_resources(self):
-        current_time = py.time.get_ticks()
-        if current_time - self.last_process_time >= MINE_DELAY:
+        if self.amount_of_coal >= 1:
+            self.has_fuel = True 
+        # current_time = py.time.get_ticks()
+        # if current_time - self.last_process_time >= MINE_DELAY:
+        while self.has_fuel:
             self.amount_of_coal -= 1
             self.amount_of_iron_ore -= 1
             self.amount_of_iron_bar += 1
-        
+        return 
+            

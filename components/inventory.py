@@ -1,6 +1,12 @@
 import pygame as py 
 from settings import *
 
+
+# Upgrades for the inventory 
+# - add it to a window of its own 
+# - put the amount of an item into the corner of the icon for the item itself 
+
+
 # INVENTORY
 class Inventory:
     def __init__(self, capacity):
@@ -13,7 +19,7 @@ class Inventory:
             self.items[item.name].quantity += item.quantity
         else:
             self.items[item.name] = item
-        # Optionally, you can add logic here to check if adding the item exceeds the capacity
+        # add logic here to check if adding the item exceeds the capacity
 
     def remove_item(self, item_name, quantity=1):
         if item_name in self.items:

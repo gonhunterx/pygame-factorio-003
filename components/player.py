@@ -85,7 +85,7 @@ class Player(py.sprite.Sprite):
             self.is_mining = False
             self.has_moved = True  # Player has started moving
         elif self.has_moved:  # Only set is_mining to True if the player has moved at least once
-            self.is_mining = True
+            self.is_mining = False
         
     def move(self):
         self.prev_pos = self.pos
@@ -99,10 +99,10 @@ class Player(py.sprite.Sprite):
             # Player is not moving, so update the mining frame and image
             self.current_mining_frame = (self.current_mining_frame + 1) % len(self.pickaxe_frames)
             self.current_image = self.pickaxe_frames[self.current_mining_frame]
-        else:
-            # Player is moving, so reset the mining frame and update the image to the walking frame
-            self.current_mining_frame = 0
-            self.current_image = self.frames[self.current_frame]
+        # else:
+        #     # Player is moving, so reset the mining frame and update the image to the walking frame
+        #     self.current_mining_frame = 0
+        #     self.current_image = self.frames[self.current_frame]
 
     def draw_inventory(surface, inventory):
         start_x, start_y = 10, 10  # Inventory display start position
@@ -120,12 +120,10 @@ class Player(py.sprite.Sprite):
         
         if self.is_mining:
             self.miner_timer += delta_time
-            while self.miner_timer >1 / self.mine_speed:
+            while self.miner_timer > 1 / self.mine_speed:
                 self.mine()
                 self.miner_timer -= 1 / self.mine_speed
-    # COLLISION
-    
-
+    # COLLISION (maybe keep this to main game file im not sure yet.)
         collided_with_resource = py.sprite.spritecollide(self, resources, False)
         if collided_with_resource:
             self.rect.topleft -= py.math.Vector2(self.velocity_x, self.velocity_y)

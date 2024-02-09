@@ -60,7 +60,8 @@ coal_vein1.rect.topleft = (500, 350)
 coal_vein2.rect.topleft = (550, 280)
 
 while True:
-    
+    collided_with_resource = py.sprite.spritecollide(player, all_resources, False)
+
     delta_time = clock.tick(FPS) / 1000.0
     keys = py.key.get_pressed()
     cursor_pos = py.mouse.get_pos()
@@ -69,8 +70,9 @@ while True:
             py.quit()
             exit()
             
-    if keys[py.K_f]:
-        # player.is_mining = True
+    if keys[py.K_f] and collided_with_resource:
+        player.is_mining = True
+        player.mine()
         current_time = py.time.get_ticks()
         if current_time - player.last_mine_time >= MINE_DELAY:
             collided_sprites = py.sprite.spritecollide(player, all_resources, False)
@@ -79,52 +81,54 @@ while True:
 
                 if isinstance(sprite, CoalVein):
                     coal = sprite.mine()
-                    player.mine()
                     if coal is not None:
                         player.inventory.add_item(coal)
                 elif isinstance(sprite, IronOre):
                     rawIron = sprite.mine()
                     player.mine()
+                    # LOGIC MISTAKE HERE (not checking right attribute maybe)
                     if rawIron is not None:
                         player.inventory.add_item(rawIron)
             player.last_mine_time = current_time
     
     # furnace logic 
-    if furnace.amount_of_coal and furnace.amount_of_iron_ore > 0:
-        for _ in range(furnace.amount_of_iron_ore):
-            furnace.process_resources()
-            print(f"iron bars:  {furnace.amount_of_iron_bar}")    
-            player.inventory.add_item(iron_bar)
-    
-    if keys[py.K_e]:
-        current_time = py.time.get_ticks()
-        if current_time - player.last_mine_time >= MINE_DELAY:
-            # Check if the cursor is over any furnace in the furnace_group
-            for furnace in furnace_group:
-                if furnace.rect.collidepoint(cursor_pos):  # Check if cursor is over the furnace
-                    iron_ore_count, coal_count = player.inventory.count_items()
-                    # Only proceed if the cursor is over the furnace
-                    furnace.amount_of_iron_ore += iron_ore_count
-                    furnace.amount_of_coal += coal_count
 
-                    player.message_log.add_message(f'{coal_count} coal added to furnace')
-                    player.message_log.add_message(f'{iron_ore_count} iron added to furnace')
-                    player.inventory.remove_item('Coal', quantity=coal_count)
-                    player.inventory.remove_item('rawIronOre', quantity=iron_ore_count)
+    
+        # current_time = py.time.get_ticks()
+        # if current_time - player.last_mine_time >= MINE_DELAY:
+            # Check if the cursor is over any furnace in the furnace_group
+            # for furnace in furnace_group:
+            
+    if furnace.rect.collidepoint(cursor_pos):  # Check if cursor is over the furnace
+        if keys[py.K_e]:
+            iron_ore_count, coal_count = player.inventory.count_items()
+            # Only proceed if the cursor is over the furnace
+            furnace.amount_of_iron_ore += iron_ore_count
+            furnace.amount_of_coal += coal_count
+
+            player.message_log.add_message(f'{coal_count} coal added to furnace')
+            player.message_log.add_message(f'{iron_ore_count} iron added to furnace')
+            player.inventory.remove_item('Coal', quantity=coal_count)
+            player.inventory.remove_item('rawIronOre', quantity=iron_ore_count)
                     
-                    # print(furnace.amount_of_coal)
-                    # print(furnace.amount_of_iron_ore)
-                    
-            player.last_mine_time = current_time
+                        # print(furnace.amount_of_coal)
+                        # print(furnace.amount_of_iron_ore)
+                        
+                # player.last_mine_time = current_time
     # if player.rect.colliderect(factory.rect):
     #     player.pos[1] += player.pos[1] - 200
     #     player.pos[0] -= player.pos[0] + 200
         
+    while furnace.has_fuel:
+        pass
+        
+     
+    # if furnace.amount_of_coal and furnace.amount_of_iron_ore > 0:
+    #     for _ in range(furnace.amount_of_iron_ore):
+    #         furnace.process_resources()
+    #         print(f"iron bars:  {furnace.amount_of_iron_bar}")    
+    #         player.inventory.add_item(iron_bar)
     
-    
-    # for sprite in collided_sprites:
-    #     print(f"Collided with {sprite}")
-
         
     all_resources.update()
     
