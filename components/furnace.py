@@ -23,5 +23,5 @@ class Furnace(py.sprite.Sprite):
             self.amount_of_coal -= 1
             self.amount_of_iron_ore -= 1
             self.amount_of_iron_bar += 1
-        return 
+        return self
             

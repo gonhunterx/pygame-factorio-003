@@ -120,7 +120,7 @@ while True:
     #     player.pos[0] -= player.pos[0] + 200
         
     while furnace.has_fuel:
-        pass
+        furnace.process_resources()
         
      
     # if furnace.amount_of_coal and furnace.amount_of_iron_ore > 0:
