@@ -62,6 +62,8 @@ coal_vein2.rect.topleft = (550, 280)
 while True:
     collided_with_resource = py.sprite.spritecollide(player, all_resources, False)
 
+    furnace.display_internal_resources(window)
+    
     delta_time = clock.tick(FPS) / 1000.0
     keys = py.key.get_pressed()
     cursor_pos = py.mouse.get_pos()
@@ -106,10 +108,10 @@ while True:
             furnace.amount_of_iron_ore += iron_ore_count
             furnace.amount_of_coal += coal_count
 
-            player.message_log.add_message(f'{coal_count} coal added to furnace')
-            player.message_log.add_message(f'{iron_ore_count} iron added to furnace')
             player.inventory.remove_item('Coal', quantity=coal_count)
             player.inventory.remove_item('rawIronOre', quantity=iron_ore_count)
+            player.message_log.add_message(f'{coal_count} coal added to furnace')
+            player.message_log.add_message(f'{iron_ore_count} iron added to furnace')
                     
                         # print(furnace.amount_of_coal)
                         # print(furnace.amount_of_iron_ore)
