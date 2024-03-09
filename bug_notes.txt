@@ -1,6 +1,13 @@
 UNDERWAY: 
 
+
+
+NO IRON BARS BEING ADDED RN 
 Adding coal and iron to the furnace gives you a seemingly random amount of iron bars 
+
+---------
+Player movement issue 
+    - when you mine then move the frame freezes 
 
 
 
